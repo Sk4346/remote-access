@@ -1,4 +1,4 @@
-This little applet is designed to be extremely simple and easy to use tray applet for freerdp
+This little applet is designed to be extremely simple and easy to use tray applet for freerdp/ssh/vnc and is cross-platform for Windows/Linux/OSX
 
 
 Machine folder
@@ -23,3 +23,16 @@ File format for vnc
 group=<mymachinesgroup>
 machine<ip/hostname>
 type=vnc
+
+
+Starting the application automatically
+
+For Linux : 
+Add this line to your .xinitrc
+`nohup mono remote.exe &`
+
+For Windows : 
+Move the remote.exe program to your Startup folder under your user profile
+
+For OSX :
+More to come...
