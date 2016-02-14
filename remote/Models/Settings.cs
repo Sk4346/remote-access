@@ -8,6 +8,8 @@ namespace remote
 		{
 		}
 
+		public string ExecutingPath { get;set; }
+		public PlatformID CurrentPlatform { get;set; }
 
 		public bool AlwaysUseDefaultResolution { get; set; }
 		public bool AlwaysUseAero { get; set; }

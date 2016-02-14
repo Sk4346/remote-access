@@ -28,6 +28,16 @@ namespace remote
 			int ResolutionHeight = 0;
 			int.TryParse(ConfigurationManager.AppSettings ["DefaultResolution"].Split('x')[1], out ResolutionHeight);
 
+			string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly ().Location);
+			PlatformID CurrentPlatform = Environment.OSVersion.Platform;
+			if (CurrentPlatform == PlatformID.MacOSX || CurrentPlatform == PlatformID.Unix) {
+				path = path + "/";
+			} else {
+				path = path + "\\";
+			}
+
+			settings.CurrentPlatform = CurrentPlatform;
+			settings.ExecutingPath = path;
 			settings.AlwaysUseDefaultResolution = UseDefaultResolution;
 			settings.AlwaysUseAero = UseAero;
 			settings.ResolutionWidth = ResolutionWidth;

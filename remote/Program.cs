@@ -15,25 +15,13 @@ namespace remote
 		private static Settings settings;
 		private static MachineService machineService = new MachineService();
 		private static SettingsService settingsService = new SettingsService();
-		private static PlatformID CurrentPlatform;
-
 
 		public static void Main (string[] args)
 		{
 			settings = settingsService.GetSettings ();
-			CurrentPlatform = Environment.OSVersion.Platform;
 			Application.Init ();
 
-			string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly ().Location);
-			string iconPath = string.Empty;
-
-			if (CurrentPlatform == PlatformID.MacOSX || CurrentPlatform == PlatformID.Unix) {
-				path = path + "/";
-			} else {
-				path = path + "\\";
-			}
-
-			iconPath = path + "favicon.ico";
+			string iconPath = settings.ExecutingPath + "favicon.ico";
 
 			trayIcon = new StatusIcon (new Pixbuf (iconPath));
 			trayIcon.PopupMenu += OnTrayIconPopup;
