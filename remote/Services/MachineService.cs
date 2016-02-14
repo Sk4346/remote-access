@@ -7,9 +7,20 @@ namespace remote
 {
 	public class MachineService
 	{
+		private string ExecutingPath { get; set; }
+		private PlatformID CurrentPlatform { get; set; }
 		public MachineService ()
 		{
-			
+			CurrentPlatform = Environment.OSVersion.Platform;
+
+			string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly ().Location);
+			string iconPath = string.Empty;
+
+			if (CurrentPlatform == PlatformID.MacOSX || CurrentPlatform == PlatformID.Unix) {
+				ExecutingPath = path + "/";
+			} else {
+				ExecutingPath = path + "\\";
+			}
 		}
 
 		public void LaunchRDP(Machine machine, Settings settings) {
@@ -24,7 +35,7 @@ namespace remote
 		}
 
 		public void LaunchVNC(Machine machine, Settings settings) {
-			Process.Start("vncviewer", machine.FileName);
+			Process.Start("vncviewer", machine.MachineName);
 		}
 
 		public string BuildArguments (Machine machine, Settings settings) {
@@ -55,8 +66,9 @@ namespace remote
 		public List<Machine> GetAllMachines() {
 			List<Machine> machines = new List<Machine> ();
 
-			string[] machineFiles = Directory.GetFiles ("machines");
+			string[] machineFiles = Directory.GetFiles (ExecutingPath + "machines");
 			foreach (string machineFile in machineFiles) {
+				string machineFilePath = System.IO.Path.GetFileName (machineFile);
 				Machine machine = new Machine ();
 				string[] lines = File.ReadAllLines (machineFile);
 				foreach (string line in lines) {
@@ -78,7 +90,7 @@ namespace remote
 							machine.MachineName = value;
 						if (param == "group")
 							machine.GroupName = value;
-						machine.FileName = machineFile.Replace("machines", "").Replace("/","").Replace("\\","");
+						machine.FileName = machineFilePath;
 					}
 				}
 				machines.Add (machine);

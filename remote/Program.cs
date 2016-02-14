@@ -11,36 +11,41 @@ namespace remote
 	class MainClass
 	{
 
-		// The tray Icon
 		private static StatusIcon trayIcon;
 		private static Settings settings;
-		// MachineService
 		private static MachineService machineService = new MachineService();
 		private static SettingsService settingsService = new SettingsService();
+		private static PlatformID CurrentPlatform;
+
 
 		public static void Main (string[] args)
 		{
 			settings = settingsService.GetSettings ();
-
-			// Initialize GTK#
+			CurrentPlatform = Environment.OSVersion.Platform;
 			Application.Init ();
 
-			// Creation of the Icon
-			trayIcon = new StatusIcon(new Pixbuf ("favicon.ico"));
-			trayIcon.Visible = true;
+			string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly ().Location);
+			string iconPath = string.Empty;
 
-			// Show/Hide the window (even from the Panel/Taskbar) when the TrayIcon has been clicked.
-			//trayIcon.Activate += delegate { window.Visible = !window.Visible; };
-			// Show a pop up menu when the icon has been right clicked.
+			if (CurrentPlatform == PlatformID.MacOSX || CurrentPlatform == PlatformID.Unix) {
+				path = path + "/";
+			} else {
+				path = path + "\\";
+			}
+
+			iconPath = path + "favicon.ico";
+
+			trayIcon = new StatusIcon (new Pixbuf (iconPath));
 			trayIcon.PopupMenu += OnTrayIconPopup;
-
-			// A Tooltip for the Icon
+			trayIcon.Visible = true;
 			trayIcon.Tooltip = "Remote Access";
+
 
 			if (Directory.Exists ("machines") == false) {
 				Directory.CreateDirectory ("machines");
 			}
-				
+
+
 			Application.Run ();
 		}
 
@@ -61,7 +66,9 @@ namespace remote
 				MenuItem parentItem = new MenuItem (item.Key);
 				Menu subMenu = new Menu ();
 				foreach (Machine machine in item) {
-					MenuItem menuItem = new MenuItem (machine.FileName);
+//					ImageMenuItem menuItem = new ImageMenuItem (machine.FileName);
+//					menuItem.Image = new Gtk.Image (Stock.Connect, IconSize.Menu);
+					MenuItem menuItem = new MenuItem (machine.RemoteType + " - " + machine.FileName);
 					menuItem.Activated += (object sender, EventArgs e) => {
 						if (machine.RemoteType == RemoteType.RDP) {
 							machineService.LaunchRDP(machine, settings);
@@ -79,7 +86,7 @@ namespace remote
 
 
 			popupMenu.Add(menuItemQuit);
-			// Quit the application when quit has been clicked.
+
 			menuItemQuit.Activated += delegate { Application.Quit(); };
 			popupMenu.ShowAll();
 			popupMenu.Popup();
