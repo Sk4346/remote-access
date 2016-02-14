@@ -37,7 +37,9 @@ Add this line to your .xinitrc
 `nohup mono remote.exe &`
 
 For Windows : 
-Move the remote.exe program to your Startup folder under your user profile
+Move the `remote.exe` program to your Startup folder under your user profile
+
+`C:\Users\<username>\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`
 
 For OSX :
 More to come...
