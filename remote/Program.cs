@@ -2,9 +2,9 @@
 using Gdk;
 using System;
 using System.IO;
-using GLib;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 namespace remote
 {
@@ -13,17 +13,20 @@ namespace remote
 
 		// The tray Icon
 		private static StatusIcon trayIcon;
+		private static Settings settings;
 		// MachineService
 		private static MachineService machineService = new MachineService();
+		private static SettingsService settingsService = new SettingsService();
 
 		public static void Main (string[] args)
 		{
-			
+			settings = settingsService.GetSettings ();
+
 			// Initialize GTK#
 			Application.Init ();
 
 			// Creation of the Icon
-			trayIcon = new StatusIcon(new Pixbuf ("Images/favicon.ico"));
+			trayIcon = new StatusIcon(new Pixbuf ("favicon.ico"));
 			trayIcon.Visible = true;
 
 			// Show/Hide the window (even from the Panel/Taskbar) when the TrayIcon has been clicked.
@@ -32,7 +35,7 @@ namespace remote
 			trayIcon.PopupMenu += OnTrayIconPopup;
 
 			// A Tooltip for the Icon
-			trayIcon.Tooltip = "Hello World Icon";
+			trayIcon.Tooltip = "Remote Access";
 
 			if (Directory.Exists ("machines") == false) {
 				Directory.CreateDirectory ("machines");
@@ -49,8 +52,6 @@ namespace remote
 			Gtk.Image appimg = new Gtk.Image(Stock.Quit, IconSize.Menu);
 			menuItemQuit.Image = appimg;
 
-
-
 			var machines = machineService.GetAllMachines ()
 				.GroupBy (x => x.GroupName);
 			foreach (var item in machines) {
@@ -63,11 +64,11 @@ namespace remote
 					MenuItem menuItem = new MenuItem (machine.FileName);
 					menuItem.Activated += (object sender, EventArgs e) => {
 						if (machine.RemoteType == RemoteType.RDP) {
-							System.Diagnostics.Process.Start("remote", "normal " + machine.FileName);
+							machineService.LaunchRDP(machine, settings);
 						} else if (machine.RemoteType == RemoteType.SSH) {
-							System.Diagnostics.Process.Start("terminator", "-e 'remote normal " + machine.FileName + "'");
+							machineService.LaunchSSH(machine, settings);
 						} else if (machine.RemoteType == RemoteType.VNC) {
-							System.Diagnostics.Process.Start("vncviewer", machine.FileName);
+							machineService.LaunchVNC(machine, settings);
 						}
 					};
 					subMenu.Add (menuItem);

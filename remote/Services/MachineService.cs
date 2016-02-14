@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace remote
 {
@@ -9,6 +10,46 @@ namespace remote
 		public MachineService ()
 		{
 			
+		}
+
+		public void LaunchRDP(Machine machine, Settings settings) {
+			Process freerdp = new Process();
+			freerdp.StartInfo.FileName = "xfreerdp";
+			freerdp.StartInfo.Arguments = BuildArguments(machine, settings);
+			freerdp.Start();
+		}
+
+		public void LaunchSSH(Machine machine, Settings settings) {
+			Process.Start("terminator", "-e 'ssh " + machine.Username + "@" + machine.MachineName + "'");
+		}
+
+		public void LaunchVNC(Machine machine, Settings settings) {
+			Process.Start("vncviewer", machine.FileName);
+		}
+
+		public string BuildArguments (Machine machine, Settings settings) {
+			string arguments = string.Empty;
+			if (settings.AlwaysUseDefaultResolution) {
+				arguments += "/w:" + settings.ResolutionWidth + " ";
+				arguments += "/h:" + settings.ResolutionHeight + " ";
+			}
+
+			if (settings.AlwaysRedirectClipboard) {
+				arguments += "+clipboard ";
+			} else {
+				arguments += "-clipboard ";
+			}
+
+			if (settings.AlwaysUseAero) {
+				arguments += "+aero ";
+			} else {
+				arguments += "-aero ";
+			}
+
+			arguments += "/u:" + machine.Username + " ";
+			arguments += "/p:" + machine.Password + " ";
+			arguments += "/v:" + machine.MachineName + " ";
+			return arguments;
 		}
 
 		public List<Machine> GetAllMachines() {
