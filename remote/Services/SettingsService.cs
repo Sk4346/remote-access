@@ -36,6 +36,22 @@ namespace remote
 				path = path + "\\";
 			}
 
+			bool AlwaysUseFonts = false;
+			bool.TryParse (ConfigurationManager.AppSettings ["AlwaysUseFonts"], out AlwaysUseFonts);
+
+			bool AlwaysUseWindowDrag = false;
+			bool.TryParse (ConfigurationManager.AppSettings ["AlwaysUseWindowDrag"], out AlwaysUseWindowDrag);
+
+			bool AlwaysUseMenuAnims = false;
+			bool.TryParse (ConfigurationManager.AppSettings ["AlwaysUseMenuAnims"], out AlwaysUseMenuAnims);
+
+			bool AlwaysUseRFX = false;
+			bool.TryParse (ConfigurationManager.AppSettings ["AlwaysUseRFX"], out AlwaysUseRFX);
+
+			settings.AlwaysUseRFX = AlwaysUseRFX;
+			settings.AlwaysUseWindowDrag = AlwaysUseWindowDrag;
+			settings.AlwaysUseMenuAnims = AlwaysUseMenuAnims;
+			settings.AlwaysUseFonts = AlwaysUseFonts;
 			settings.CurrentPlatform = CurrentPlatform;
 			settings.ExecutingPath = path;
 			settings.AlwaysUseDefaultResolution = UseDefaultResolution;

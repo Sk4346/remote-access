@@ -16,6 +16,10 @@ namespace remote
 			Process freerdp = new Process();
 			freerdp.StartInfo.FileName = "xfreerdp";
 			freerdp.StartInfo.Arguments = BuildArguments(machine, settings);
+			freerdp.StartInfo.RedirectStandardError = true;
+			freerdp.StartInfo.RedirectStandardOutput = true;
+			freerdp.StartInfo.RedirectStandardInput = true;
+			freerdp.StartInfo.UseShellExecute = false;
 			freerdp.Start();
 		}
 
@@ -44,6 +48,28 @@ namespace remote
 				arguments += "+aero ";
 			} else {
 				arguments += "-aero ";
+			}
+
+			if (settings.AlwaysUseFonts) {
+				arguments += "+fonts ";
+			} else {
+				arguments += "-fonts ";
+			}
+
+			if (settings.AlwaysUseWindowDrag) {
+				arguments += "+window-drag ";
+			} else {
+				arguments += "-window-draw ";
+			}
+			 
+			if (settings.AlwaysUseMenuAnims) {
+				arguments += "+menu-anims ";
+			} else {
+				arguments += "-menu-anims ";
+			}
+
+			if (settings.AlwaysUseRFX) {
+				arguments += "/rfx ";
 			}
 
 			arguments += "/u:" + machine.Username + " ";
